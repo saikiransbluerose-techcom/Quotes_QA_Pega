@@ -1,0 +1,238 @@
+{
+  "datasets": {
+    "Data Variant 1": {
+      "applicant": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "dob": {
+          "month": "01",
+          "day": "01",
+          "year": "1990"
+        },
+        "employmentStatus": "Employed Full-Time",
+        "income": "$10,0000",
+        "dependentsPlusClicks": 2,
+        "coverageType": "Employer-Sponsored",
+        "phone": "1 (234) 567-899",
+        "email": "johndoe@example.com"
+      },
+      "address": {
+        "country": "United States",
+        "line1": "12 A",
+        "city": "Chicago",
+        "state": "IL",
+        "postal": "12345"
+      },
+      "self": {
+        "gender": "Male",
+        "bloodGroup": "O+",
+        "maritalStatus": "Married",
+        "nationality": "American",
+        "expiry": {
+          "month": "01",
+          "day": "01",
+          "year": "2026"
+        }
+      },
+      "partner": {
+        "name": "Monica",
+        "dob": {
+          "month": "01",
+          "day": "01",
+          "year": "1992"
+        },
+        "age": "33",
+        "relationship": "Spouse",
+        "gender": "Female",
+        "bloodGroup": "B+"
+      },
+      "child1": {
+        "name": "Nick",
+        "dob": {
+          "month": "01",
+          "day": "01",
+          "year": "2020"
+        },
+        "age": "5",
+        "gender": "Male",
+        "bloodGroup": "O+"
+      },
+      "medical": {
+        "preExistingNotes": "Allergies",
+        "primaryPhysician": "Dr Ebeling",
+        "primaryContact": "1 (234) 567-8999",
+        "visitedNotes": "Dr XXX",
+        "eyeDoctor": "Dr YYY",
+        "visionDate": {
+          "month": "01",
+          "day": "01",
+          "year": "2024"
+        }
+      },
+      "billing": {
+        "paymentMethod": "Cash",
+        "country": "United States",
+        "line1": "12 A",
+        "city": "Chicago",
+        "state": "IL",
+        "postal": "12345"
+      }
+    },
+    "Data Variant 2": {
+      "applicant": {
+        "firstName": "Alex",
+        "lastName": "King",
+        "dob": {
+          "month": "02",
+          "day": "10",
+          "year": "1985"
+        },
+        "employmentStatus": "Employed Full-Time",
+        "income": "$10,0000",
+        "dependentsPlusClicks": 2,
+        "coverageType": "Employer-Sponsored",
+        "phone": "1 (555) 123-0000",
+        "email": "alex.king@example.com"
+      },
+      "address": {
+        "country": "United States",
+        "line1": "77 Broadway",
+        "city": "New York",
+        "state": "NY",
+        "postal": "10001"
+      },
+      "self": {
+        "gender": "Male",
+        "bloodGroup": "A+",
+        "maritalStatus": "Single",
+        "nationality": "American",
+        "expiry": {
+          "month": "12",
+          "day": "31",
+          "year": "2027"
+        }
+      },
+      "partner": {
+        "name": "Riya",
+        "dob": {
+          "month": "01",
+          "day": "01",
+          "year": "1980"
+        },
+        "age": "45",
+        "relationship": "Spouse",
+        "gender": "Female",
+        "bloodGroup": "O+"
+      },
+      "child1": {
+        "name": "Alex",
+        "dob": {
+          "month": "01",
+          "day": "01",
+          "year": "2020"
+        },
+        "age": "5",
+        "gender": "Male",
+        "bloodGroup": "AB+"
+      },
+      "medical": {
+        "preExistingNotes": "Dust Allergies",
+        "primaryPhysician": "Dr Potter",
+        "primaryContact": "1 (234) 567-8999",
+        "visitedNotes": "Dr AAA",
+        "eyeDoctor": "Dr BBB",
+        "visionDate": {
+          "month": "12",
+          "day": "12",
+          "year": "2024"
+        }
+      },
+      "billing": {
+        "paymentMethod": "Cash",
+        "country": "United States",
+        "line1": "77 Broadway",
+        "city": "New York",
+        "state": "NY",
+        "postal": "10001"
+      }
+    },
+    "Data Variant 3": {
+      "applicant": {
+        "firstName": "Priya",
+        "lastName": "Sharma",
+        "dob": {
+          "month": "03",
+          "day": "15",
+          "year": "1993"
+        },
+        "employmentStatus": "Employed Full-Time",
+        "income": "$10,0000",
+        "dependentsPlusClicks": 1,
+        "coverageType": "Employer-Sponsored",
+        "phone": "1 (222) 333-4444",
+        "email": "priyasharma@example.com"
+      },
+      "address": {
+        "country": "United States",
+        "line1": "500 Market St",
+        "city": "San Francisco",
+        "state": "CA",
+        "postal": "94105"
+      },
+      "self": {
+        "gender": "Female",
+        "bloodGroup": "B-",
+        "maritalStatus": "Married",
+        "nationality": "American",
+        "expiry": {
+          "month": "06",
+          "day": "30",
+          "year": "2028"
+        }
+      },
+      "partner": {
+        "name": "Rahul",
+        "dob": {
+          "month": "04",
+          "day": "22",
+          "year": "1990"
+        },
+        "age": "35",
+        "relationship": "Spouse",
+        "gender": "Male",
+        "bloodGroup": "O+"
+      },
+      "child1": {
+        "name": "Aarav",
+        "dob": {
+          "month": "07",
+          "day": "21",
+          "year": "2021"
+        },
+        "age": "4",
+        "gender": "Male",
+        "bloodGroup": "A+"
+      },
+      "medical": {
+        "preExistingNotes": "Asthma",
+        "primaryPhysician": "Dr Liu",
+        "primaryContact": "1 (444) 555-6677",
+        "visitedNotes": "Dr Patel",
+        "eyeDoctor": "Dr Gupta",
+        "visionDate": {
+          "month": "05",
+          "day": "15",
+          "year": "2024"
+        }
+      },
+      "billing": {
+        "paymentMethod": "Cash",
+        "country": "India",
+        "line1": "C 126 Nehru Colony",
+        "city": "Dehradun",
+        "state": "UA",
+        "postal": "248001"
+      }
+    }
+  }
+}
