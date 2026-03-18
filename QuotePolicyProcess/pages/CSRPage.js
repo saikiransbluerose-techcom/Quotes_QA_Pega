@@ -17,7 +17,6 @@ export class CSRPage {
     await expect(this.page.getByRole('heading', { name: 'Onboarding Insurance' })).
       toBeVisible({ timeout: 10_000 });
     await this.page.getByLabel("Create").click();
-    //await this.page.getByText("Quote").first().click();
     await this.page.getByTestId(":menu-item:").getByText("Quote").click();
 
     log.ok("Quote creation started.");
@@ -60,7 +59,6 @@ export class CSRPage {
 
   async submitApplicantAndAssert() {
     const p = this.page;
-    // await p.pause();
     const a = this.data.applicant;
     await Promise.all([
       p.waitForLoadState("networkidle").catch(() => { }),
@@ -123,7 +121,7 @@ export class CSRPage {
     await p.locator('label:has-text("Do you have any pre-existing")').locator("div").click().catch(() => { });
     await p.getByTestId("If yes, please specify:text-area:control").fill(medical.preExistingNotes || "");
     await p.getByTestId("Primary Physician Name:input:control").fill(medical.primaryPhysician || "");
-    await p.getByTestId("Primary Physician’s Contact:phone-input:control").fill(medical.primaryContact || "");
+    await p.getByTestId("Primary Physician's Contact:phone-input:control").fill(medical.primaryContact || "");
     await p.locator('label:has-text("Do you receive annual health")').locator("div").click().catch(() => { });
     await p.locator('label:has-text("Do you get routine")').locator("div").click().catch(() => { });
     await p.locator('label:has-text("Have you ever visited a")').locator("div").click().catch(() => { });
@@ -146,7 +144,6 @@ export class CSRPage {
     const expectedAddress = "12 A";
     const address1 = p.getByTestId("Address Line 1:input:control");
 
-    // make sure the correct field is ready, then fill and assert *now*
     await expect(address1).toBeEditable();
     await address1.fill(expectedAddress);
     await expect(address1).toHaveValue(expectedAddress, { timeout: 5000 });
@@ -175,26 +172,31 @@ export class CSRPage {
     log.ok("Quote Case closed with Status: Resolved-Completed");
   }
 
-//  async captureNumbers() {
-  //  const p = this.page;
-  //  const quoteNumber = (await p.getByTestId(":case-view:subheading").textContent()).trim();
- //   const policyNumber = (await p.getByRole("link", { name: /^O-/ }).textContent()).trim();
-//    log.info(`Quote Number: ${quoteNumber}`);
- //   log.info(`Policy Number: ${policyNumber}`);
- //   return { quoteNumber, policyNumber };
-//  }
-
   async openInsuranceIdCard(quoteNumber) {
     await this.page.getByRole("button", { name: "Attachments" }).click();
     await this.page.getByRole("button", { name: `Insurance ID Card_${quoteNumber}.pdf`, exact: true }).click();
     await this.page.getByTestId(":lightbox:close").click();
   }
 
-  
   async logoutCSR() {
-    await this.page.getByRole("banner").getByRole("button", { name: /csr test/i }).click();
-    await this.page.getByText("Log off").click();
+    const p = this.page;
+
+    // 1. Click the profile/avatar button in the banner
+    const profileBtn = p.getByRole("banner").getByRole("button", { name: /csr test/i });
+    await profileBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await profileBtn.click();
+
+    // 2. Wait for the dropdown menu to animate open
+    await p.waitForTimeout(500);
+
+    // 3. Click Log off using force to avoid detached DOM issues in Pega
+    const logOffBtn = p.getByText("Log off");
+    await logOffBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await logOffBtn.click({ force: true });
+
+    // 4. Wait for page to settle after logout
+    await p.waitForLoadState('networkidle').catch(() => {});
+
     log.ok("Logged out successfully as CSR.");
   }
-  
 }
