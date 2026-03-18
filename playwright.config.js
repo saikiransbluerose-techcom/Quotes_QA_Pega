@@ -37,7 +37,6 @@ export default defineConfig({
 
     // ✅ Changed to 'on' so you always get a recording in Jenkins
     screenshot: 'only-on-failure',
-    video: 'on', 
     trace: 'on',
   },
 
