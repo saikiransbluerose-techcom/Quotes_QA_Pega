@@ -17,18 +17,19 @@ export default defineConfig({
   // Reporters
   reporter: [
     ['list'],
-    ['html', { open: 'always', outputFolder: 'playwright-report' }]
+    ['html', { open: process.env.CI ? 'never' : 'always', outputFolder: 'playwright-report' }]
+    //  ☝️ 'never' on Jenkins (no browser to open), 'always' on local
   ],
 
   // Shared context for all tests
   use: {
-    // IMPORTANT: same host used when you generated auth.json
-    //baseURL: 'https://hiringmanagement-xu9pj8-prod.pegalaunchpad.com',
-   // storageState: './auth.json',    // reuse your saved login
-    channel: 'chrome',              // helps with SSO/device policies
-    headless: false,                // keep visible while stabilizing
-     launchOptions: {
-      slowMo: 1000,
+    channel: 'chrome',
+
+    // ✅ Headless on Jenkins (CI=true), headed locally
+    headless: process.env.CI === 'true',
+
+    launchOptions: {
+      slowMo: process.env.CI ? 0 : 1000,  // ✅ No slowMo on Jenkins, 1000ms locally
       args: [
         '--disable-extensions',
         '--disable-popup-blocking',
@@ -38,13 +39,16 @@ export default defineConfig({
         '--disable-features=BlockInsecurePrivateNetworkRequests',
       ],
     },
+
     viewport: { width: 1366, height: 850 },
     actionTimeout: 30_000,
     navigationTimeout: 60_000,
     ignoreHTTPSErrors: false,
+
+    // ✅ Artifacts - saved on failure
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    trace: 'retain-on-failure'
+    trace: 'retain-on-failure',
   },
 
   // Choose the browser(s)
