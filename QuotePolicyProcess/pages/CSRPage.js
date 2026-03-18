@@ -4,10 +4,9 @@ import { expect } from "@playwright/test";
 import { getCSRData } from "../utils/dataProvider.js";
 
 export class CSRPage {
-  /** @param {import('@playwright/test').Page} page */
+  /** @param {import('@playwright/test').Page} page /
   constructor(page) {
     this.page = page;
-    // Use env to pick the JSON dataset: "Data Variant 1/2/3"
     const key = process.env.DATA_KEY || "Data Variant 1";
     this.data = getCSRData(key);
     log.info(`CSR data variant: ${key}`);
@@ -18,7 +17,6 @@ export class CSRPage {
       toBeVisible({ timeout: 10_000 });
     await this.page.getByLabel("Create").click();
     await this.page.getByTestId(":menu-item:").getByText("Quote").click();
-
     log.ok("Quote creation started.");
   }
 
@@ -40,7 +38,6 @@ export class CSRPage {
     await p.getByTestId("Phone Number:phone-input:control").fill(a.phone);
     await p.getByTestId("Email Address:input:control").fill(a.email);
 
-    // Verify first name and Email address
     const expectedFirstName = a.firstName;
     await expect(p.getByTestId("First Name:input:control")).toHaveValue(expectedFirstName);
     console.log('\nAssertion Successful. First Name is correct. Expected Name:', a.firstName, '. Actual First Name:',
@@ -64,7 +61,6 @@ export class CSRPage {
       p.waitForLoadState("networkidle").catch(() => { }),
       p.getByRole("button", { name: "Submit" }).click(),
     ]);
-
     await p.getByRole("tab", { name: "Basic" }).click();
   }
 
@@ -118,10 +114,19 @@ export class CSRPage {
     // Medical
     log.step("CSR: Filling Medical details...");
     await p.getByRole("tab", { name: "Medical" }).click();
+
+    // ✅ Wait for Medical tab content to fully load before interacting
+    await p.waitForLoadState('domcontentloaded').catch(() => {});
+
     await p.locator('label:has-text("Do you have any pre-existing")').locator("div").click().catch(() => { });
     await p.getByTestId("If yes, please specify:text-area:control").fill(medical.preExistingNotes || "");
     await p.getByTestId("Primary Physician Name:input:control").fill(medical.primaryPhysician || "");
-    await p.getByTestId("Primary Physician's Contact:phone-input:control").fill(medical.primaryContact || "");
+
+    // ✅ Wait for the phone field to be visible before filling (Pega renders it after pre-existing toggle)
+    const physicianContact = p.getByTestId("Primary Physician's Contact:phone-input:control");
+    await physicianContact.waitFor({ state: 'visible', timeout: 15000 });
+    await physicianContact.fill(medical.primaryContact || "");
+
     await p.locator('label:has-text("Do you receive annual health")').locator("div").click().catch(() => { });
     await p.locator('label:has-text("Do you get routine")').locator("div").click().catch(() => { });
     await p.locator('label:has-text("Have you ever visited a")').locator("div").click().catch(() => { });
@@ -143,11 +148,9 @@ export class CSRPage {
 
     const expectedAddress = "12 A";
     const address1 = p.getByTestId("Address Line 1:input:control");
-
     await expect(address1).toBeEditable();
     await address1.fill(expectedAddress);
     await expect(address1).toHaveValue(expectedAddress, { timeout: 5000 });
-
     console.log('\nAssertion Successful. Billing Address is correct. Expected Address:', expectedAddress, '. Actual Address:',
       await address1.inputValue());
 
