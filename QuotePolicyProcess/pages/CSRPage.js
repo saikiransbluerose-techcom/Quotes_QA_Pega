@@ -4,7 +4,7 @@ import { expect } from "@playwright/test";
 import { getCSRData } from "../utils/dataProvider.js";
 
 export class CSRPage {
-  /** @param {import('@playwright/test').Page} page /
+  /** @param {import('@playwright/test').Page} page */
   constructor(page) {
     this.page = page;
     const key = process.env.DATA_KEY || "Data Variant 1";
