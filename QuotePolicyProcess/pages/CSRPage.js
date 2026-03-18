@@ -175,14 +175,14 @@ export class CSRPage {
     log.ok("Quote Case closed with Status: Resolved-Completed");
   }
 
-  async captureNumbers() {
-    const p = this.page;
-    const quoteNumber = (await p.getByTestId(":case-view:subheading").textContent()).trim();
-    const policyNumber = (await p.getByRole("link", { name: /^O-/ }).textContent()).trim();
-    log.info(`Quote Number: ${quoteNumber}`);
-    log.info(`Policy Number: ${policyNumber}`);
-    return { quoteNumber, policyNumber };
-  }
+//  async captureNumbers() {
+  //  const p = this.page;
+  //  const quoteNumber = (await p.getByTestId(":case-view:subheading").textContent()).trim();
+ //   const policyNumber = (await p.getByRole("link", { name: /^O-/ }).textContent()).trim();
+//    log.info(`Quote Number: ${quoteNumber}`);
+ //   log.info(`Policy Number: ${policyNumber}`);
+ //   return { quoteNumber, policyNumber };
+//  }
 
   async openInsuranceIdCard(quoteNumber) {
     await this.page.getByRole("button", { name: "Attachments" }).click();
