@@ -1,35 +1,25 @@
-// playwright.config.js
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-  // Where tests live
   testDir: './QuotePolicyProcess',
-
-  // Global timeouts
-  timeout: 120_000,                 // per test
-  expect: { timeout: 30_000 },      // for expect()
-
-  // Retries / parallelism
+  timeout: 120_000,
+  expect: { timeout: 30_000 },
   retries: 0,
   fullyParallel: false,
-  workers: undefined,               // default
+  workers: undefined,
 
-  // Reporters
   reporter: [
     ['list'],
     ['html', { open: process.env.CI ? 'never' : 'always', outputFolder: 'playwright-report' }]
-    //  ☝️ 'never' on Jenkins (no browser to open), 'always' on local
   ],
 
-  // Shared context for all tests
   use: {
     channel: 'chrome',
-
-    // ✅ Headless on Jenkins (CI=true), headed locally
+    // Headless on Jenkins, headed locally
     headless: process.env.CI === 'true',
 
     launchOptions: {
-      slowMo: process.env.CI ? 0 : 1000,  // ✅ No slowMo on Jenkins, 1000ms locally
+      slowMo: process.env.CI ? 0 : 1000,
       args: [
         '--disable-extensions',
         '--disable-popup-blocking',
@@ -45,13 +35,12 @@ export default defineConfig({
     navigationTimeout: 60_000,
     ignoreHTTPSErrors: false,
 
-    // ✅ Artifacts - saved on failure
+    // ✅ Changed to 'on' so you always get a recording in Jenkins
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
-    trace: 'retain-on-failure',
+    video: 'on', 
+    trace: 'on',
   },
 
-  // Choose the browser(s)
   projects: [
     {
       name: 'chromium',
@@ -62,6 +51,5 @@ export default defineConfig({
     }
   ],
 
-  // Where artifacts go
   outputDir: 'test-results'
 });
