@@ -2,6 +2,9 @@ pipeline {
     agent any
 
     environment {
+        // Forces Playwright to run headless on Jenkins to avoid display errors
+        CI = 'true'
+
         // Credentials from Jenkins (Manage Jenkins > Credentials)
         PDN_USER = credentials('PDN_USER')
         PDN_PASS = credentials('PDN_PASS')
@@ -22,7 +25,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                // package.json is at repo root now
+                // package.json is at repo root
                 bat 'npm install'
             }
         }
@@ -52,7 +55,7 @@ pipeline {
 
     post {
         always {
-            // Publish Playwright HTML report (HTML Publisher plugin required)
+            // 1. Publish Playwright HTML report (requires HTML Publisher plugin)
             publishHTML(target: [
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
@@ -62,9 +65,17 @@ pipeline {
                 reportName: 'Playwright HTML Report'
             ])
 
-            // Also archive reports as artifacts
+            // 2. Archive the full report folder
             archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
-            archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
+
+            // 3. Archive Screenshots (on failure)
+            archiveArtifacts artifacts: 'test-results/**/*.png', allowEmptyArchive: true
+
+            // 4. Archive Video Recordings (on failure)
+            archiveArtifacts artifacts: 'test-results/**/*.webm', allowEmptyArchive: true
+
+            // 5. Archive Trace Files (on failure)
+            archiveArtifacts artifacts: 'test-results/**/*.zip', allowEmptyArchive: true
         }
     }
 }
