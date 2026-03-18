@@ -7,78 +7,83 @@ export class AppLoginPage {
   async asUser(username, password) {
     console.log("Login to Application as:", username);
 
-    // 1) Scope to the login form/container to avoid matching other password fields
     const form = this.page
-      .locator('form:has(#txtPassword), #loginPanel, .login-form, form') // fallbacks
+      .locator('form:has(#txtPassword), #loginPanel, .login-form, form')
       .first();
     await expect(form).toBeVisible({ timeout: 15000 });
 
     await form.getByPlaceholder("User name").fill(username);
-
-    // Use exact placeholder; still scoped to the form
     await form.getByPlaceholder("Password", { exact: true }).fill(password);
 
-    // 2) Click and wait for navigation/network to settle (race-free)
     const submit = form.getByRole("button", { name: /log in/i });
     await expect(submit).toBeVisible();
 
     await Promise.all([
       this.page.waitForLoadState("networkidle").catch(() => {}),
       submit.click(),
-
-      
     ]);
 
-
-     // ✅ DO NOT return until Accept is dealt with and the home heading is visible
+    // ✅ Wait for Accept dialog and home heading
     await this._arriveAfterAdLogin();
-
-    // // Your privacy-dialog handling (kept as-is, just scoped to page)
-    // const btn = this.page.getByTestId(":privacy-dialog:accept");
-    // const present = await btn
-    //   .waitFor({ state: "attached", timeout: 2000 })
-    //   .then(() => true, () => false);
-
-    // if (present) {
-    //   await btn.click({ timeout: 3000 });
-    //   await this.page.waitForTimeout(500);
-    //   await btn.waitFor({ state: "detached", timeout: 3000 }).catch(() => {});
-    // }
   }
-
-
 
   async _arriveAfterAdLogin() {
     const p = this.page;
     const heading = p.getByRole('heading', { name: 'Onboarding Insurance' });
 
-    // Accept button can have slightly different selectors across builds
-    const byTestIdA = p.getByTestId('privacy-dialog:accept');
-    const byTestIdB = p.getByTestId(':privacy-dialog:accept');   // keep if your DOM really uses leading ':'
-    const byRole    = p.getByRole('button', { name: /^(accept|i agree|agree and continue|ok)$/i });
-
     const deadline = Date.now() + 30_000;
 
     while (Date.now() < deadline) {
-      if (await heading.isVisible().catch(() => false)) break;
-
-      const btn =
-        (await byTestIdA.isVisible().catch(() => false)) ? byTestIdA :
-        (await byTestIdB.isVisible().catch(() => false)) ? byTestIdB :
-        (await byRole.isVisible().catch(() => false))    ? byRole :
-        null;
-
-      if (btn) {
-        await Promise.all([
-          p.waitForLoadState('domcontentloaded').catch(() => {}),
-          btn.click(),
-        ]);
-        // loop back and re-check heading
-        continue;
+      // ✅ If heading is visible, we are done
+      if (await heading.isVisible().catch(() => false)) {
+        console.log("✅ Home heading visible. Login complete.");
+        break;
       }
 
-      // small poll to let the UI attach either the dialog or the heading
-      await p.waitForTimeout(250);
+      // ✅ Try all possible Accept button selectors
+      const acceptSelectors = [
+        p.getByTestId('privacy-dialog:accept'),
+        p.getByTestId(':privacy-dialog:accept'),
+        p.getByRole('button', { name: /^(accept|i agree|agree and continue|ok)$/i }),
+      ];
+
+      let clicked = false;
+      for (const btn of acceptSelectors) {
+        try {
+          // ✅ Check if visible first
+          const isVisible = await btn.isVisible().catch(() => false);
+          if (!isVisible) continue;
+
+          // ✅ Wait for it to be stable before clicking
+          await btn.waitFor({ state: 'visible', timeout: 3000 });
+
+          // ✅ Use force: true to avoid detached DOM issues in Pega
+          await btn.click({ force: true, timeout: 5000 });
+
+          console.log("✅ Accepted privacy dialog.");
+
+          // ✅ Wait for the dialog to disappear before looping again
+          await btn.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+
+          // ✅ Let the page settle after clicking
+          await p.waitForLoadState('domcontentloaded').catch(() => {});
+          await p.waitForTimeout(500);
+
+          clicked = true;
+          break; // stop trying other selectors once one worked
+        } catch {
+          // button disappeared mid-click, just continue the loop
+          continue;
+        }
+      }
+
+      if (!clicked) {
+        // Nothing to click yet, poll again
+        await p.waitForTimeout(250);
+      }
     }
+
+    // ✅ Final assertion — fail clearly if heading never appeared
+    await expect(heading).toBeVisible({ timeout: 10000 });
   }
 }
