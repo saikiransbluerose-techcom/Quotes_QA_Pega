@@ -37,7 +37,7 @@ test("Quote & Policy E2E (Role-POM, JS)", async ({ browser }) => {
   await csr.decidePremiumApprove();
   await csr.fillSelfPartnerChildMedicalBillingAndSubmit();
   //await csr.assertQuoteResolvedCompleted();
-  const { quoteNumber, policyNumber } = await csr.captureNumbers();
+  //const { quoteNumber, policyNumber } = await csr.captureNumbers();
   await csr.openInsuranceIdCard(quoteNumber);
   await csr.logoutCSR();
 
