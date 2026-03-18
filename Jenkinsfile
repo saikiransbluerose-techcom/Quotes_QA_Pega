@@ -2,16 +2,14 @@ pipeline {
     agent any
 
     environment {
-        // Forces Playwright to run headless on Jenkins to avoid display errors
         CI = 'true'
-
-        // Credentials from Jenkins (Manage Jenkins > Credentials)
+        // Credentials from Jenkins
         PDN_USER = credentials('PDN_USER')
         PDN_PASS = credentials('PDN_PASS')
         CSR_USER = credentials('CSR_USER')
         CSR_PASS = credentials('CSR_PASS')
 
-        // URLs (non-secret)
+        // URLs
         PDN_URL = 'https://pegalabs.pega.com/ui/system/cddd8f50-0220-47b5-9954-62beb8c85e1b'
         ENV_URL = 'https://bluerosetech01.pegalabs.io/prweb'
     }
@@ -25,7 +23,6 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                // package.json is at repo root
                 bat 'npm install'
             }
         }
@@ -36,26 +33,27 @@ pipeline {
             }
         }
 
-        stage('Run ONLY loginTest_v1.spec.js') {
+        stage('Run Playwright Test') {
             steps {
-                bat """
+                // Using single quotes and %VAR% to securely pass secrets on Windows
+                bat '''
                     set DATA_KEY=Data Variant 1
-                    set PDN_URL=${env.PDN_URL}
-                    set ENV_URL=${env.ENV_URL}
-                    set PDN_USER=${env.PDN_USER}
-                    set PDN_PASS=${env.PDN_PASS}
-                    set CSR_USER=${env.CSR_USER}
-                    set CSR_PASS=${env.CSR_PASS}
+                    set PDN_URL=%PDN_URL%
+                    set ENV_URL=%ENV_URL%
+                    set PDN_USER=%PDN_USER%
+                    set PDN_PASS=%PDN_PASS%
+                    set CSR_USER=%CSR_USER%
+                    set CSR_PASS=%CSR_PASS%
 
                     npx playwright test QuotePolicyProcess/tests/loginTest_v1.spec.js --reporter=html
-                """
+                '''
             }
         }
     }
 
     post {
         always {
-            // 1. Publish Playwright HTML report (requires HTML Publisher plugin)
+            // Publish HTML Report
             publishHTML(target: [
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
@@ -65,16 +63,10 @@ pipeline {
                 reportName: 'Playwright HTML Report'
             ])
 
-            // 2. Archive the full report folder
+            // Archive all artifacts for download
             archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
-
-            // 3. Archive Screenshots (on failure)
             archiveArtifacts artifacts: 'test-results/**/*.png', allowEmptyArchive: true
-
-            // 4. Archive Video Recordings (on failure)
             archiveArtifacts artifacts: 'test-results/**/*.webm', allowEmptyArchive: true
-
-            // 5. Archive Trace Files (on failure)
             archiveArtifacts artifacts: 'test-results/**/*.zip', allowEmptyArchive: true
         }
     }
